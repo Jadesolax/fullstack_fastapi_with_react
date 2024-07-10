@@ -46,7 +46,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3002:3000"
+      - "3002:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
     environment:
       - VITE_API_URL=http://backend:8000
     depends_on:
