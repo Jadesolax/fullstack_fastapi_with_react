@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db1:
+  db:
     image: postgres:13
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -12,7 +12,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  backend1:
+  backend:
     build: ./backend
     environment:
       DOMAIN: ${DOMAIN}
@@ -39,18 +39,18 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db1
+      - db
   
-  frontend1:
+  frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "3002:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
+      - "3000:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
     environment:
       - VITE_API_URL=http://backend:8000
     depends_on:
-      - backend1
+      - backend
 volumes:
   postgres_data:
 
