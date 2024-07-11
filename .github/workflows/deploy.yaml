@@ -66,18 +66,15 @@ jobs:
         EC2_HOST: ${{ secrets.EC2_HOST }}
       run: |
         echo "${SSH_KEY}" > fastapi.pem
-        chmod 600 key.pem
+        chmod 600 fastapi.pem
 
         ssh -o StrictHostKeyChecking=no -i fastapi.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
-          docker stop backend || true
-          docker stop frontend || true
+          cd /path/to/your/docker-compose
 
-          docker rm backend || true
-          docker rm frontend || true
+          docker-compose down
 
-          docker run -d --name backend -p 8000:8000 ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
-          docker run -d --name frontend -p 3000:80 ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+          docker-compose up --build -d
         EOF
