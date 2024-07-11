@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  db1:
+  db:
     image: postgres:13
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
@@ -12,8 +12,8 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  backend1:
-    build: ./backend
+  backend:
+    image: jadesolax/frontend-fastapi:2
     environment:
       DOMAIN: ${DOMAIN}
       ENVIRONMENT: ${ENVIRONMENT}
@@ -39,18 +39,16 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db1
+      - db
   
-  frontend1:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+  frontend:
+    image: jadesolax/actual-frontend-fastapi:3
     ports:
-      - "3002:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
+      - "3000:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
     environment:
-      - VITE_API_URL=http://backend:8000
+      - VITE_API_URL=http://13.43.138.239:8000
     depends_on:
-      - backend1
+      - backend
 volumes:
   postgres_data:
 
