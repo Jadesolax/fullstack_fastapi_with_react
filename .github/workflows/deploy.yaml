@@ -3,10 +3,10 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - multi-stage
+      - actions-branch
   pull_request:
     branches:
-      - multi-stage
+      - actions-branch
 
 jobs:
   build-and-deploy:
