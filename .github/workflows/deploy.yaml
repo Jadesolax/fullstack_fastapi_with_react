@@ -3,28 +3,28 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - actions-branch
+      - multi-stage
   pull_request:
     branches:
-      - actions-branch
+      - multi-stage
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+
     services:
       postgres:
         image: postgres:13
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_password
         options: >-
-          --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}" 
-          --health-interval 10s 
-          --health-timeout 5s 
+          --health-cmd "pg_isready -U test_user"
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
 
     steps:
@@ -37,26 +37,21 @@ jobs:
     - name: Login to Docker Hub
       uses: docker/login-action@v2
       with:
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-
-    - name: Set up Docker Compose
-      uses: docker/setup-qemu-action@v2
-      with:
-        platforms: linux/amd64,linux/arm64
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
     - name: Build and push Backend Docker image
       run: |
         docker buildx create --use
         docker buildx build --push --platform linux/amd64,linux/arm64 \
-          --tag ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest \
+          --tag ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest \
           --file backend/Dockerfile .
 
     - name: Build and push Frontend Docker image
       run: |
         docker buildx create --use
         docker buildx build --push --platform linux/amd64,linux/arm64 \
-          --tag ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest \
+          --tag ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest \
           --file frontend/Dockerfile .
 
     - name: Deploy to AWS EC2
@@ -64,17 +59,107 @@ jobs:
         SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
         EC2_USER: ${{ secrets.EC2_USER }}
         EC2_HOST: ${{ secrets.EC2_HOST }}
+        POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+        POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       run: |
-        echo "${SSH_KEY}" > fastapi.pem
-        chmod 600 fastapi.pem
+        echo "${SSH_KEY}" > key.pem
+        chmod 600 key.pem
 
-        ssh -o StrictHostKeyChecking=no -i fastapi.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
-          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+        ssh -o StrictHostKeyChecking=no -i key.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/backend:latest
+          docker pull ${{ secrets.DOCKER_HUB_USERNAME }}/frontend:latest
 
-          cd ./docker-compose
+          cd /path/to/your/docker-compose
+
+          export POSTGRES_DB=${POSTGRES_DB}
+          export POSTGRES_USER=${POSTGRES_USER}
+          export POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
           docker-compose down
 
           docker-compose up --build -d
         EOF
+
+
+
+# name: CI/CD Pipeline
+
+# on:
+#   push:
+#     branches:
+#       - actions-branch
+#   pull_request:
+#     branches:
+#       - actions-branch
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+    
+#     services:
+#       postgres:
+#         image: postgres:13
+#         ports:
+#           - 5432:5432
+#         env:
+#           POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+#           POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+#           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+#         options: >-
+#           --health-cmd "pg_isready -U ${{ secrets.POSTGRES_USER }}" 
+#           --health-interval 10s 
+#           --health-timeout 5s 
+#           --health-retries 5
+
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v3
+
+#     - name: Set up Docker Buildx
+#       uses: docker/setup-buildx-action@v3
+
+#     - name: Login to Docker Hub
+#       uses: docker/login-action@v2
+#       with:
+#         username: ${{ secrets.DOCKERHUB_USERNAME }}
+#         password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+#     - name: Set up Docker Compose
+#       uses: docker/setup-qemu-action@v2
+#       with:
+#         platforms: linux/amd64,linux/arm64
+
+#     - name: Build and push Backend Docker image
+#       run: |
+#         docker buildx create --use
+#         docker buildx build --push --platform linux/amd64,linux/arm64 \
+#           --tag ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest \
+#           --file backend/Dockerfile .
+
+#     - name: Build and push Frontend Docker image
+#       run: |
+#         docker buildx create --use
+#         docker buildx build --push --platform linux/amd64,linux/arm64 \
+#           --tag ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest \
+#           --file frontend/Dockerfile .
+
+#     - name: Deploy to AWS EC2
+#       env:
+#         SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+#         EC2_USER: ${{ secrets.EC2_USER }}
+#         EC2_HOST: ${{ secrets.EC2_HOST }}
+#       run: |
+#         echo "${SSH_KEY}" > fastapi.pem
+#         chmod 600 fastapi.pem
+
+#         ssh -o StrictHostKeyChecking=no -i fastapi.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
+#           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
+#           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
+
+#           cd ./docker-compose
+
+#           docker-compose down
+
+#           docker-compose up --build -d
+#         EOF
