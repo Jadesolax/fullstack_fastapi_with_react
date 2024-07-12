@@ -70,7 +70,7 @@ jobs:
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
-          
+          cd /full-stack-fastapi-project
 
           export POSTGRES_DB=${POSTGRES_DB}
           export POSTGRES_USER=${POSTGRES_USER}

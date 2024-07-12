@@ -48,7 +48,7 @@ services:
     ports:
       - "3000:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
     environment:
-      - VITE_API_URL=http://backend:8000
+      - VITE_API_URL=http://35.178.173.122:8000
     depends_on:
       - backend
 volumes:
