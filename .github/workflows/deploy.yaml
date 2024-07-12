@@ -38,7 +38,7 @@ jobs:
       uses: docker/login-action@v2
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
     - name: Build and push Backend Docker image
       run: |
@@ -70,7 +70,7 @@ jobs:
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
-          cd /path/to/your/docker-compose
+          
 
           export POSTGRES_DB=${POSTGRES_DB}
           export POSTGRES_USER=${POSTGRES_USER}
