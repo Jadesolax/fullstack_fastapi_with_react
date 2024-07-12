@@ -45,17 +45,17 @@ RUN apt-get update && apt-get install -y \
     && curl -sSL https://install.python-poetry.org | python3 - \
     && apt-get clean
 
-# Copy project files
-COPY . .
+# Add Poetry to PATH
+ENV PATH="/root/.local/bin:$PATH"
 
-# Install Poetry
-RUN python3 -m pip install poetry
+# Copy project files
+COPY pyproject.toml poetry.lock ./
+
+# Install Poetry dependencies
+RUN poetry install --no-root
 
 # Export the requirements.txt file from Poetry
 RUN poetry export -f requirements.txt --output requirements.txt
-
-# Install the dependencies
-RUN pip install --no-cache-dir -r requirements.txt
 
 # Stage 2: Runtime
 FROM python:3.9-slim
@@ -65,6 +65,12 @@ WORKDIR /app
 
 # Copy the dependencies from the build stage
 COPY --from=build /app /app
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY . .
 
 # Expose the port
 EXPOSE 8000
