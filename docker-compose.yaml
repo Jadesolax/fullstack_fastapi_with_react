@@ -13,7 +13,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    image: jadesolax/frontend-fastapi:2
+    build: ./backend
     environment:
       DOMAIN: ${DOMAIN}
       ENVIRONMENT: ${ENVIRONMENT}
@@ -42,9 +42,9 @@ services:
       - db
   
   frontend:
-    image: jadesolax/actual-frontend-fastapi:3
-      #context: ./frontend
-      #dockerfile: Dockerfile
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
     ports:
       - "3000:80" # SHOULD BE 3002:3000 IF SINGLE STAGE BUILD
     environment:
