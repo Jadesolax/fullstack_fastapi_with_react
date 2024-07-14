@@ -48,7 +48,7 @@ services:
     ports:
       - "3002:3000"
     environment:
-      - VITE_API_URL=http://backend:8000
+      - VITE_API_URL=http://18.135.46.148:8000
     depends_on:
       - backend1
 volumes:
