@@ -18,9 +18,9 @@ jobs:
         ports:
           - 5432:5432
         env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: test_user
-          POSTGRES_PASSWORD: test_password
+          POSTGRES_DB: ${POSTGRES_DB}
+          POSTGRES_USER: ${POSTGRES_USER}
+          POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
         options: >-
           --health-cmd "pg_isready -U test_user"
           --health-interval 10s
@@ -66,7 +66,7 @@ jobs:
         echo "${SSH_KEY}" > fastapi.pem
         chmod 600 key.pem
 
-        ssh -o StrictHostKeyChecking=no -i key.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
+        ssh -o StrictHostKeyChecking=no -i fastapi.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/backend:latest
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/frontend:latest
 
