@@ -33,7 +33,7 @@
 
 
 # Stage 1: Build
-FROM python:3.9-slim as build
+FROM python:3.10-slim as build
 
 # Set working directory
 WORKDIR /app
@@ -58,7 +58,7 @@ RUN poetry install --no-root
 RUN poetry export -f requirements.txt --output requirements.txt
 
 # Stage 2: Runtime
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 # Set working directory
 WORKDIR /app
