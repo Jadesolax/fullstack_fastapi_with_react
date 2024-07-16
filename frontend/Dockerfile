@@ -7,14 +7,15 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY frontend/package*.json ./
 
+RUN npm audit fix
 # Install dependencies
-RUN npm install
+RUN npm install -g npm@10.8.2
 
 # Copy all files
 COPY . .
 
 # Build the application
-RUN npm run build --verbose
+RUN npm run build
 
 # Stage 2: Production Stage
 FROM nginx:stable-alpine AS production-stage
