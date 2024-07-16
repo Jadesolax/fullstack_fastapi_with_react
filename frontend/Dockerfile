@@ -33,10 +33,6 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 
 
-
-
-
-
 #--------------SINGLE STAGE BUILD-------------------------------
 
 # # Use the official Node.js image with version 16
