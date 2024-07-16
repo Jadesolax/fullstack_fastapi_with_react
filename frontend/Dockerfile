@@ -5,7 +5,7 @@ FROM node:20.15.1 as build-stage
 WORKDIR /app
 
 # Copy package.json and package-lock.json
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Install dependencies
 RUN npm install
