@@ -36,7 +36,7 @@ jobs:
 
     - name: Deploy to AWS EC2
       env:
-        SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+        AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
         EC2_USER: ${{ secrets.EC2_USER }}
         EC2_HOST: ${{ secrets.EC2_HOST }}
         POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
@@ -50,7 +50,7 @@ jobs:
           docker pull jadesolax/frontend-fastapi:2
           docker pull jadesolax/actual-frontend-fastapi:3
 
-          # cd /full-stack-fastapi-project
+          
 
           export POSTGRES_DB=${POSTGRES_DB}
           export POSTGRES_USER=${POSTGRES_USER}
@@ -62,7 +62,7 @@ jobs:
 
 
 #------------------------------ABANDONED AFTER multiple issues with deprecated dependencies --npm audit fix --------------
-
+# cd /full-stack-fastapi-project
 # name: CI/CD Pipeline
 
 # on:
