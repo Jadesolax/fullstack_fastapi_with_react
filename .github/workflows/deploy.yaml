@@ -43,7 +43,7 @@ jobs:
         POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
         POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
       run: |
-        echo "${SSH_KEY}" > fastapi.pem
+        echo "${AWS_SSH_KEY}" > fastapi.pem
         chmod 600 fastapi.pem
 
         ssh -o StrictHostKeyChecking=no -i fastapi.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
