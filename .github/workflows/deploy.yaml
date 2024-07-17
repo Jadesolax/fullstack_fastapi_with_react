@@ -50,7 +50,7 @@ jobs:
           docker pull jadesolax/frontend-fastapi:2
           docker pull jadesolax/actual-frontend-fastapi:3
 
-          cd /full-stack-fastapi-project
+          # cd /full-stack-fastapi-project
 
           export POSTGRES_DB=${POSTGRES_DB}
           export POSTGRES_USER=${POSTGRES_USER}
