@@ -47,8 +47,14 @@ jobs:
         chmod 600 fastapi.pem
 
         ssh -o StrictHostKeyChecking=no -i fastapi.pem ${EC2_USER}@${EC2_HOST} << 'EOF'
-          docker pull jadesolax/frontend-fastapi:2
-          docker pull jadesolax/actual-frontend-fastapi:3
+          sudo usermod -aG docker ${USER}
+
+          # Re-evaluate group membership
+          newgrp docker
+
+          
+          sudo docker pull jadesolax/frontend-fastapi:2
+          sudo docker pull jadesolax/actual-frontend-fastapi:3
 
           
 
