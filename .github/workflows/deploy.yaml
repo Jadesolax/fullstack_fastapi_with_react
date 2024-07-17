@@ -64,6 +64,8 @@ jobs:
 
           sudo git clone -b actions-branch https://github.com/jadesolax/fullstack_fastapi_with_react.git
 
+          cd fullstack_fastapi_with_react
+
           sudo docker-compose down
           sudo docker-compose up -d
         EOF
